@@ -176,8 +176,12 @@ public class Pet extends EntityCosmetic<PetType, Mob> implements Updatable {
         // Teleporting an entity across worlds seems to internally remove and re-add
         // the entity anyway, so we do it manually to keep pathfinders working correctly.
         if (entity.getWorld() != getPlayer().getWorld()) {
-            entity.remove();
-            initializeEntity();
+            getUltraCosmetics().getScheduler().runAtLocation(entity.getLocation(), (task) -> {
+                if (entity != null) {
+                    entity.remove();
+                }
+            });
+            getUltraCosmetics().getScheduler().runAtEntityLater(getPlayer(), this::initializeEntity, 1);
         }
 
         onUpdate();
